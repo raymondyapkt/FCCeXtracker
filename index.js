@@ -59,39 +59,43 @@ app.post("/api/users/:_id/exercises", function(req, res) {
   exObj["duration"]    = duration,
   exObj["date"]        = dateA 
   exObj["_id"]         = _id
-  console.log(exObj["_id"],exLs[_id]["log"])
   res.json( exObj  )
 });
 
 app.get("/api/users/:_id/logs", function(req, res) {
-  var { _id } = req.params
-  var { from , to , limit } = req.query
-  if (typeof from === "undefined" ){res.json( exLs[_id])}
+
+  var { _id } = req.params  
+  var {from , to , limit } = req.query
+  console.log(  from , to , limit )
+  if  ( typeof from === "undefined" && 
+        typeof limit === "undefined" ){res.json( exLs[_id])}
   else{  
-    console.log( _id ,from , to , limit )
+    if     ( typeof(limit) === "undefined" ){
+      limit =  exLs[_id]["log"].length
+      dfrom   = new Date(from).setHours(0, 0, 0, 0)
+      dto     = new Date(to  ).setHours(0, 0, 0, 0) 
+    } else { limit = parseInt(limit)}
+
+    var  tempLogs = {}
+    tempLogs["username"] = exLs[_id]["username"]
+    tempLogs["count"]    = exLs[_id]["count"]
+    tempLogs["_id"]      = exLs[_id]["_id"]
+    tempLogs["log"]      = []
+
+    for ( i=0 ; i<exLs[_id]["log"].length ; i++ ) {
+      var dateR = (new Date((exLs[_id]["log"][i]["date"]))).getTime() 
+      if   ( dateR < dfrom  ||  dto < dateR  || limit == 0 ) { continue}
+      else {  
+        tempLogs["log"].push(exLs[_id]["log"][i])
+        limit --  }
+    }
+    tempLogs["count"]    = tempLogs["log"].length
+    console.log(  tempLogs )
+    res.json(  tempLogs )
   }
-   
-
-
 });
 
 // ####################
-
-
-
-/*
-app.route("/api/user").get((req, res) => {
-  const username = req.body.username;
-  res.json({username:username});
-}).post(async (req, res) => {
-  const  { username } = req.body.username
-  uID++;
-  exLs[uID] = {'username':req.body.username,
-      '+id' : ( 'ffcd' + uID.toString().padStart(8,"0") ) }
-  console.log(exLs)
-});
-*/
-
 
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log('Your app is listening on port ' + listener.address().port)
