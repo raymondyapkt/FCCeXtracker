@@ -21,45 +21,58 @@ app.post("/api/users", function(req, res) {
   var username = req.body.username;
   uID++;
   var id =  ('fd' + uID.toString().padStart(3,"0") )
-  exLs[id] = {"username":username,"_id":id} 
-  res.json( exLs[id] );
+  exLs[id] = {"username":username} 
+  res.json({"username":exLs[id]["username"],"_id":id}  );
 });
 
 app.get("/api/users", function (req, res) {
   var lists = [] 
-  for (id in exLs) lists.push(exLs[id])
-  console.log (  lists )
+  for (id in exLs) lists.push({"username":exLs[id]["username"],"_id":id})
   res.json( lists )
 });
-
-var count = 1
-var logs =[]
 
 app.post("/api/users/:_id/exercises", function(req, res) {
   var { _id } = req.params
   var description = req.body.description;
   var duration    = parseInt(req.body.duration);
-  var date        = req.body.date;
-  var dateA = 0 
-  if ( date == "" ) { dateA = new Date().toDateString()}
-  else          { dateA = new Date().toDateString(date) } 
-
-
-  var log = { //'description': description,
+  var date        = req.body.date
+  if (typeof date === "undefined" || date ===""  ) {
+        var dateA = new Date().toDateString()}
+  else{ var dateA = new Date(req.body.date).toDateString() } 
+  var log = { 'description': description,
               'duration'   : duration,
-             // 'date'       : dateA, 
-               'id':_id 
+              'date'       : dateA, 
             }
-  console.log (  log )
 
-  //exLs[_id]["log"] = logs.push(log)
-  //exLs[_id]["count"] = count
-  //count++
-  
-  //console.log ( exLs )
-  //res.json( exLs[_id] )
+  if ("log" in exLs[_id] ) {
+    exLs[_id]["log"].push(log)
+    exLs[_id]["count"] ++
+  } else { 
+    exLs[_id]["count"] = 1; 
+    exLs[_id]["_id"] = _id 
+    exLs[_id]["log"] = [log]
+  }
 
-   //  http://127.0.0.1:3000/api/users/ffcd00000001/exercises
+  var exObj = {}  
+  exObj["username"]    = exLs[_id]["username"]
+  exObj["description"] = description,
+  exObj["duration"]    = duration,
+  exObj["date"]        = dateA 
+  exObj["_id"]         = _id
+  console.log(exObj["_id"],exLs[_id]["log"])
+  res.json( exObj  )
+});
+
+app.get("/api/users/:_id/logs", function(req, res) {
+  var { _id } = req.params
+  var { from , to , limit } = req.query
+  if (typeof from === "undefined" ){res.json( exLs[_id])}
+  else{  
+    console.log( _id ,from , to , limit )
+  }
+   
+
+
 });
 
 // ####################
