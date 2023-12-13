@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Exercise Tracker | freeCodeCamp</title>
-    <link rel="shortcut icon" href="https://cdn.freecodecamp.org/universal/favicons/favicon.ico"  type="image/x-icon" />
+    <title>Exercise Tracker Microservice</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css" />
     <link href="style.css" rel="stylesheet" type="text/css" />
   </head>
@@ -15,7 +14,7 @@
         <p><code>POST /api/users</code></p>
         <input id="uname" type="text" name="username" value="username1" />
         <input type="submit" value="Submit" />
-      </form>
+      </form><br>
       <form id="exercise-form" method="post">
         <h3>Add exercises</h3>
         <p><code>POST /api/users/:_id/exercises</code></p>
@@ -31,6 +30,11 @@
       </p>
       <p><strong>[ ]</strong> = optional</p>
       <p><strong>from, to</strong> = dates (yyyy-mm-dd); <strong>limit</strong> = number</p>
+
+      <p>GET user list  : http://192.168.100.200/api/users </p>
+      <p>GET logs list  : http://192.168.100.200/api/users/fd002/logs </p>
+      <p>GET logs  : http://192.168.100.200/api/users/fd002/logs?from=2001-01-02&to=2001-01-04&limit=2 </p>
+
     </div>
     <script>
       const exerciseForm = document.getElementById("exercise-form");
